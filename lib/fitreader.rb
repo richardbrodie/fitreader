@@ -1,5 +1,9 @@
+require "fitreader/fitfile"
+
 require "fitreader/version"
 
 module Fitreader
-  # Your code goes here...
+  def self.read(path)
+    FitFile.new.read(path)
+  end
 end
