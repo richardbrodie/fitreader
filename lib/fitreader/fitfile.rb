@@ -5,11 +5,8 @@ require 'fitreader/definition'
 require 'fitreader/record'
 
 module Fitreader
-  class FitFile
+  class FitFile < self
     attr_reader :header, :records, :defs, :file
-    def initialize
-      @header = nil
-    end
 
     def read(path)
       @file = File.open(path, 'rb')

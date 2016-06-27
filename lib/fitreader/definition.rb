@@ -16,9 +16,6 @@ module Fitreader
     def add_fields(bytes)
       bytes.chars.each_slice(3) do |x|
         fd = FieldDefinition.new(@global_msg_num, x)
-        # if global_msg_num == 23
-        #   puts fd
-        # end
         @fields.push(fd)
       end
     end
