@@ -27,7 +27,11 @@ module Fitreader
       @offset=offset
     end
     def to_s
-      "#{id}, #{name}"
+      "#{id}:
+       name: #{name}
+       type: #{type}
+       scale: #{scale}
+       offset: #{offset}"
     end
   end
 
