@@ -1,6 +1,6 @@
 require "fitreader/fitfile"
-require 'pry'
 require "fitreader/version"
+require "fitreader/static"
 
 module Fitreader
   def self.read(path)
@@ -17,11 +17,11 @@ module Fitreader
     @f.records.collect{|x| [x.global_msg_num, x.name]}.uniq.to_h
   end
 
-  def self.records(type = nil)
-    if type.nil?
-      @f.records
-    else
-      @f.records.select{|x| x.name == type}
-    end
+  def self.records_by_type(type)
+    @f.records.select{|x| x.name == type}
+  end
+
+  def self.records_by_msgnum(num)
+    @f.records.select{|x| x.global_msg_num == num}
   end
 end

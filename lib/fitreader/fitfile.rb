@@ -1,14 +1,14 @@
-require 'fitreader/constants'
 require 'fitreader/file_header'
 require 'fitreader/record_header'
 require 'fitreader/definition'
 require 'fitreader/record'
+require 'fitreader/static'
 
 module Fitreader
-  class FitFile < self
+  class FitFile
     attr_reader :header, :records, :defs, :file
 
-    def read(path)
+    def initialize(path)
       @file = File.open(path, 'rb')
       @header = FileHeader.new(@file.read(14))
       if valid?

@@ -1,5 +1,4 @@
 require 'fitreader/field_definition'
-require 'fitreader/constants'
 
 module Fitreader
   class Definition
@@ -8,7 +7,8 @@ module Fitreader
       @local_msg_num = msg_num
       @architecture = bytes[1].unpack('C').first
       @global_msg_num = bytes[2..3].unpack('v').first
-      @name = ENUMS[:enum_mesg_num][@global_msg_num]
+      # @name = ENUMS[:enum_mesg_num][@global_msg_num]
+      @name = Static.const['enum_mesg_num'][@global_msg_num]
       @num_fields = bytes[4].unpack('C').first
       @fields = []
     end
@@ -25,6 +25,7 @@ module Fitreader
     end
 
     def message_type
+      # MESSAGE_TYPE[@global_msg_num]
       MESSAGE_TYPE[@global_msg_num]
     end
   end
