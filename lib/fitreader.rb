@@ -1,11 +1,11 @@
-require "fitreader/fitfile"
-require "fitreader/version"
-require "fitreader/static"
+require 'fitreader/fitfile'
+require 'fitreader/version'
+require 'fitreader/static'
 
 module Fitreader
   def self.read(path)
-    @f = FitFile.new
-    @f.read(path)
+    @f = FitFile.new(path)
+    binding.pry
   end
 
   def self.header
@@ -13,7 +13,6 @@ module Fitreader
   end
 
   def self.available_records
-    binding.pry
     @f.records.collect{|x| [x.global_msg_num, x.name]}.uniq.to_h
   end
 

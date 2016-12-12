@@ -5,12 +5,16 @@ module Fitreader
     @@const ||= YAML::load_file(File.join( File.dirname(__FILE__), 'sdk/constants.yml'))
     @@types ||= YAML::load_file(File.join( File.dirname(__FILE__), 'sdk/types.yml'))
 
-    def self.const
-      @@const
+    def self.base
+      @@types[:base_types]
     end
 
-    def self.types
-      @@types
+    def self.message
+      @@types[:message_fields]
+    end
+
+    def self.enums
+      @@const
     end
   end
 end

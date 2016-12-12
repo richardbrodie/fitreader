@@ -9,37 +9,38 @@ module Fitreader
       @name = definition.name
       @fields = {}
       start = 0
-      msg_type = MESSAGE_FIELDS[@global_msg_num]
+      msg_type = Static.message[@global_msg_num]
       # if ENV["RAILS_ENV"] != 'test' && @global_msg_num == 23
       #   binding.pry
       # end
       definition.fields.each do |f|
         raw = bytes[start...start+=f.size]
-        base_type = BASE_TYPES[f.base_type_num]
+        base_type = Static.base[f.base_type_num]
 
-        if base_type.unpack?
-          if base_type.size != f.size and base_type.id != 7
+        if !base_type[:unpack_type].nil?
+          if base_type[:size] != f.size && f.base_type_num != 7
             data = []
             s = 0
-            (f.size/base_type.size).times do |x|
-              data.push(raw[s..s+=base_type.size].unpack(base_type.unpack_type).first)
+            (f.size/base_type[:size]).times do |_|
+              data.push(raw[s..s+=base_type[:size]].unpack(base_type[:unpack_type]).first)
             end
           else
-            data = raw.unpack(base_type.unpack_type).first
+            data = raw.unpack(base_type[:unpack_type]).first
           end
-        elsif base_type.id == 0
+        elsif f.base_type_num.zero?
           data = raw.unpack('C').first
         else
           data = raw.split(/\0/)[0]
         end
 
         if data.class != Array
-          @fields[f.def_num] = FieldData.new(f.def_num, data, msg_type) unless data == base_type.invalid
+          @fields[f.def_num] = FieldData.new(data, msg_type[f.def_num]) unless data == base_type[:invalid]
         elsif data.class == Array
-          data = data.select{|x| x != base_type.invalid}
-          @fields[f.def_num] = FieldData.new(f.def_num, data, msg_type) unless data.empty?
+          data = data.select{ |x| x != base_type[:invalid] }
+          @fields[f.def_num] = FieldData.new(data, msg_type[f.def_num]) unless data.empty?
         end
-      end
+
+      end unless msg_type.nil?
 
       if @global_msg_num == 21
         process_event
@@ -49,7 +50,7 @@ module Fitreader
     end
 
     def temporal?
-      fields.has_key?(253)
+      fields.key?(253)
     end
 
     def msg_type
@@ -59,7 +60,7 @@ module Fitreader
     def get_val(key)
       if key.class == String
         f = @fields.values.detect{|v| v.name == key}
-      elsif key.class == Fixnum
+      elsif key.class == Integer
         f = @fields[key]
       end
       return f != nil ? f.value : nil
@@ -68,18 +69,18 @@ module Fitreader
     def get_raw(key)
       if key.class == String
         f = @fields.values.detect{|v| v.name == key}
-      elsif key.class == Fixnum
+      elsif key.class == Integer
         f = @fields[key]
       end
-      return f != nil ? f.raw_value : nil
+      return !f.nil? ? f.raw_value : nil
     end
 
     def to_s
       s = "#{name} (#{global_msg_num})\n"
-      @fields.each do |k,v|
+      @fields.each do |_, v|
         s += v.to_s
       end
-      return s+"\n"
+      "#{s}\n"
     end
 
     private
@@ -87,27 +88,27 @@ module Fitreader
       t = @fields[0]
       d = @fields[3]
       d.value = case t.value
-      when :rear_gear_change, :front_gear_change
-        process_gear_change(d.raw_value)
-      end
+                when :rear_gear_change, :front_gear_change
+                  process_gear_change(d.raw_value)
+                end
     end
 
     def process_deviceinfo
       d = @fields[1]
       t = @fields[25]
-      if d != nil && t != nil
+      if !d.nil? && !t.nil?
         d.value = case t.value
-        when :antplus
-          ENUMS[:antplus_device_type][d.raw_value]
-        end
+                  when :antplus
+                    Static.enums[:antplus_device_type][d.raw_value]
+                  end
       end
       d = @fields[4]
       t = @fields[2]
-      if d != nil && t != nil
+      if !d.nil? && !t.nil?
         d.value = case t.value
-        when :garmin, :dynastream, :dynastream_oem
-          ENUMS[:enum_garmin_product][d.raw_value]
-        end
+                  when :garmin, :dynastream, :dynastream_oem
+                    Static.enums[:enum_garmin_product][d.raw_value]
+                  end
       end
     end
 
