@@ -2,7 +2,7 @@ require 'fitreader/field_data'
 
 module Fitreader
   class Record
-    attr_accessor :local_msg_num, :global_msg_num, :name, :fields
+    attr_reader :local_msg_num, :global_msg_num, :name, :fields
     def initialize(definition, bytes)
       @local_msg_num = definition.local_msg_num
       @global_msg_num = definition.global_msg_num
@@ -34,10 +34,10 @@ module Fitreader
         end
 
         if data.class != Array
-          @fields[f.def_num] = FieldData.new(data, msg_type[f.def_num]) unless data == base_type[:invalid]
+          @fields[f.def_num] = FieldData.new(f.def_num, data, msg_type[f.def_num]) unless data == base_type[:invalid]
         elsif data.class == Array
           data = data.select{ |x| x != base_type[:invalid] }
-          @fields[f.def_num] = FieldData.new(data, msg_type[f.def_num]) unless data.empty?
+          @fields[f.def_num] = FieldData.new(f.def_num, data, msg_type[f.def_num]) unless data.empty?
         end
 
       end unless msg_type.nil?
