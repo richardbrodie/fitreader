@@ -13,10 +13,10 @@ module Fitreader
           puts "developer"
         end
       else
-        puts "timestamp"
         @header_type = :timestamp
         @local_msg_num = byte & TIMESTAMP_TYPE
         @timestamp_offset = byte & TIMESTAMP_OFFSET
+        puts "timestamp header: #{@local_msg_num} :: #{@timestamp_offset}"
       end
     end
 

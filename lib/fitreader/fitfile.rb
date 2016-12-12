@@ -33,14 +33,14 @@ module Fitreader
         dr.add_fields(@file.read(dr.num_fields*3))
         @defs[h.local_msg_num] = dr
       elsif h.header_type == :data
-        if dr != nil
+        if !dr.nil?
           data = @file.read(dr.content_length)
           datr = Record.new(dr, data)
           @records.push(datr)
         end
       elsif h.header_type == :timestamp
-        puts "timestamp"
-        # puts "msg_num: #{h.local_msg_num}, offset: #{h.timestamp_offset}"
+        puts "timestamp :: "
+        puts "msg_num: #{h.local_msg_num}, offset: #{h.timestamp_offset}"
       else
         puts "not a valid record"
       end

@@ -1,3 +1,4 @@
+require 'pry'
 require 'fitreader/fitfile'
 require 'fitreader/version'
 require 'fitreader/static'
@@ -5,7 +6,7 @@ require 'fitreader/static'
 module Fitreader
   def self.read(path)
     @f = FitFile.new(path)
-    binding.pry
+    # binding.pry
   end
 
   def self.header

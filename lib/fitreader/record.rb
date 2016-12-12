@@ -2,45 +2,28 @@ require 'fitreader/field_data'
 
 module Fitreader
   class Record
-    attr_accessor :local_msg_num, :global_msg_num, :name, :fields
+    attr_reader :local_msg_num, :global_msg_num, :name, :fields
     def initialize(definition, bytes)
       @local_msg_num = definition.local_msg_num
       @global_msg_num = definition.global_msg_num
       @name = definition.name
       @fields = {}
-      start = 0
-      msg_type = Static.message[@global_msg_num]
+      @msg_type = Static.message[@global_msg_num]
+
       # if ENV["RAILS_ENV"] != 'test' && @global_msg_num == 23
       #   binding.pry
       # end
-      definition.fields.each do |f|
-        raw = bytes[start...start+=f.size]
-        base_type = Static.base[f.base_type_num]
-
-        if !base_type[:unpack_type].nil?
-          if base_type[:size] != f.size && f.base_type_num != 7
-            data = []
-            s = 0
-            (f.size/base_type[:size]).times do |_|
-              data.push(raw[s..s+=base_type[:size]].unpack(base_type[:unpack_type]).first)
-            end
-          else
-            data = raw.unpack(base_type[:unpack_type]).first
-          end
-        elsif f.base_type_num.zero?
-          data = raw.unpack('C').first
-        else
-          data = raw.split(/\0/)[0]
+      unless @msg_type.nil?
+        start = 0
+        definition.fields.each do |f|
+          raw = bytes[start...start+=f.size]
+          b = Static.base[f.base_type_num]
+          data = unpack_data(f, b, raw)
+          process_data(f, b[:invalid], data)
         end
-
-        if data.class != Array
-          @fields[f.def_num] = FieldData.new(data, msg_type[f.def_num]) unless data == base_type[:invalid]
-        elsif data.class == Array
-          data = data.select{ |x| x != base_type[:invalid] }
-          @fields[f.def_num] = FieldData.new(data, msg_type[f.def_num]) unless data.empty?
-        end
-
-      end unless msg_type.nil?
+      else
+        puts "no known message type: #{@global_msg_num}"
+      end
 
       if @global_msg_num == 21
         process_event
@@ -49,12 +32,43 @@ module Fitreader
       end
     end
 
-    def temporal?
-      fields.key?(253)
+    def unpack_data(f, b, raw)
+      if !b[:unpack_type].nil?
+        if b[:size] != f.size && f.base_type_num != 7
+          data = []
+          s = 0
+          (f.size/b[:size]).times do |_|
+            data.push(raw[s..s+=b[:size]].unpack(b[:unpack_type]).first)
+          end
+        else
+          data = raw.unpack(b[:unpack_type]).first
+        end
+      elsif f.base_type_num.zero?
+        data = raw.unpack('C').first
+      else
+        data = raw.split(/\0/)[0]
+      end
     end
 
-    def msg_type
-      puts "#{name} (#{global_msg_num})"
+    def process_data(f, invalid, data)
+      field_def = @msg_type[f.def_num]
+
+      unless field_def.nil?
+        if data.class != Array
+          @fields[f.def_num] = FieldData.new(f.def_num, data, field_def) unless data == invalid
+        elsif data.class == Array
+          data = data.select{ |x| x != invalid }
+          @fields[f.def_num] = FieldData.new(f.def_num, data, field_def) unless data.empty?
+        else
+          puts "data class unknown: #{@global_msg_num}"
+        end
+      else
+        puts "message type: #{@name} (#{@global_msg_num}) has no known field type: #{f.def_num}" if field_def.nil?
+      end
+    end
+
+    def temporal?
+      fields.key?(253)
     end
 
     def get_val(key)
