@@ -6,7 +6,7 @@ require 'fitreader/static'
 module Fitreader
   def self.read(path)
     @f = FitFile.new(path)
-    # binding.pry
+    binding.pry
   end
 
   def self.header
@@ -14,14 +14,19 @@ module Fitreader
   end
 
   def self.available_records
-    @f.records.collect{|x| [x.global_msg_num, x.name]}.uniq.to_h
+    @f.records.collect { |x| [x.global_msg_num, x.name] }
+      .group_by { |i| i }
+      .sort
+      .map { |k, v| { k => v.length } }
   end
 
-  def self.records_by_type(type)
-    @f.records.select{|x| x.name == type}
-  end
-
-  def self.records_by_msgnum(num)
-    @f.records.select{|x| x.global_msg_num == num}
+  def self.filter_records(filter)
+    if filter.is_a?(Symbol)
+      @f.records.select { |x| x.name == filter }
+    elsif filter.is_a?(Integer)
+      @f.records.select { |x| x.global_msg_num == filter }
+    else
+      throw
+    end
   end
 end
