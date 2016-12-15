@@ -6,7 +6,6 @@ require 'fitreader/static'
 module Fitreader
   def self.read(path)
     @f = FitFile.new(path)
-    binding.pry
   end
 
   def self.header
@@ -14,19 +13,33 @@ module Fitreader
   end
 
   def self.available_records
-    @f.records.collect { |x| [x.global_msg_num, x.name] }
+    # binding.pry
+    @f.records.collect { |x| [x.definition.global_num, x.definition.name] }
       .group_by { |i| i }
       .sort
       .map { |k, v| { k => v.length } }
   end
 
-  def self.filter_records(filter)
+  def self.filter_by_record(filter)
     if filter.is_a?(Symbol)
-      @f.records.select { |x| x.name == filter }
+      @f.records.select { |x| x.definition.name == filter }
     elsif filter.is_a?(Integer)
-      @f.records.select { |x| x.global_msg_num == filter }
+      @f.records.select { |x| x.definition.global_num == filter }
     else
-      throw
+      raise ArgumentError, "needs a string or a symbol"
     end
   end
+
+  # def self.error_fields(filter=nil)
+  #   @f.records.
+  # end
+
+  # def self.filter_by_scope(filter)
+  #   valid = Static.scope.include? filter
+  #   unless valid
+  #     @f.records.select { |x| x.type == filter }
+  #   else
+  #     puts "invalid scope, must be one of #{Static.scope}"
+  #   end
+  # end
 end

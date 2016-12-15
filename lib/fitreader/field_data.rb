@@ -1,11 +1,15 @@
 module Fitreader
   class FieldData
-    attr_accessor :id, :raw_value, :value, :name
+    attr_accessor :id, :raw_value, :value, :name, :valid
 
     def initialize(id, raw_value, type)
       @id = id
       @raw_value = raw_value
-      process_type(raw_value, type) unless type.nil?
+      unless type.nil?
+        process_type(raw_value, type)
+      else
+        puts "nil type #{id} - #{raw_value}"
+      end
     end
 
     private

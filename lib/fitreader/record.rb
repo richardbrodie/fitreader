@@ -1,40 +1,42 @@
 require 'fitreader/field_data'
+require 'fitreader/errors'
 
 module Fitreader
   class Record
-    attr_reader :local_msg_num, :global_msg_num, :name, :fields
+    attr_reader :definition, :fields, :error_fields
     def initialize(definition, bytes)
-      @local_msg_num = definition.local_msg_num
-      @global_msg_num = definition.global_msg_num
-      @name = definition.name
+      @definition = definition
       @fields = {}
-      @msg_type = Static.message[@global_msg_num]
+      @error_fields = {}
 
-      # if ENV["RAILS_ENV"] != 'test' && @global_msg_num == 23
-      #   binding.pry
-      # end
-      unless @msg_type.nil?
+      unless @definition.fit_msg.nil?
         start = 0
-        definition.fields.each do |f|
+        @definition.field_definitions.each do |f|
           raw = bytes[start...start+=f.size]
-          b = Static.base[f.base_type_num]
+          b = Static.base[f.base_num]
           data = unpack_data(f, b, raw)
-          process_data(f, b[:invalid], data)
+          begin
+            process_data(f.def_num, b[:invalid], data)
+          rescue UnknownFieldTypeError => error
+            push_error error.reason, error.field, error.data
+            # puts error unless error.reason == :invalid
+          end
         end
       else
-        puts "no known message type: #{@global_msg_num}"
+        msg = "no known message type: #{@definition.global_num}"
+        raise UnknownMessageTypeError.new(definition), msg, caller
       end
 
-      if @global_msg_num == 21
+      if @definition.global_num == 21
         process_event
-      elsif @global_msg_num == 23
+      elsif @definition.global_num == 23
         process_deviceinfo
       end
     end
 
     def unpack_data(f, b, raw)
       if !b[:unpack_type].nil?
-        if b[:size] != f.size && f.base_type_num != 7
+        if b[:size] != f.size && f.base_num != 7
           data = []
           s = 0
           (f.size/b[:size]).times do |_|
@@ -43,32 +45,66 @@ module Fitreader
         else
           data = raw.unpack(b[:unpack_type]).first
         end
-      elsif f.base_type_num.zero?
+      elsif f.base_num.zero?
         data = raw.unpack('C').first
       else
         data = raw.split(/\0/)[0]
       end
     end
 
-    def process_data(f, invalid, data)
-      field_def = @msg_type[f.def_num]
-
+    def process_data(fieldDefNum, invalid, data)
+      field_def = @definition.fit_msg[fieldDefNum]
       unless field_def.nil?
-        if data.class != Array
-          @fields[f.def_num] = FieldData.new(f.def_num, data, field_def) unless data == invalid
-        elsif data.class == Array
-          data = data.select{ |x| x != invalid }
-          @fields[f.def_num] = FieldData.new(f.def_num, data, field_def) unless data.empty?
+        if data.is_a?(Array)
+          data = data.select{ |x| x != invalid } if data.is_a?(Array)
+          invalid = data.empty?
         else
-          puts "data class unknown: #{@global_msg_num}"
+          invalid = data == invalid
+        end
+
+        unless invalid
+          @fields[fieldDefNum] = FieldData.new(fieldDefNum, data, field_def)
+        else
+          msg = "invalid field data (#{data}) processed for field number [#{fieldDefNum}::#{field_def[:name]}] in message (#{@definition.global_num}::#{@definition.name})"
+          raise UnknownFieldTypeError.new(@definition, fieldDefNum, data, :invalid), msg, caller
         end
       else
-        puts "message type: #{@name} (#{@global_msg_num}) has no known field type: #{f.def_num}" if field_def.nil?
+        msg = "invalid field [#{fieldDefNum}] encountered for message [#{@definition.global_num}::#{@definition.name}] with data [#{data}]"
+        raise UnknownFieldTypeError.new(@definition, fieldDefNum, data, :unknown), msg, caller
       end
     end
 
     def temporal?
       fields.key?(253)
+    end
+
+    def push_error(reason, field, data)
+      (@error_fields[reason] ||= {})[field] = data
+    end
+
+    # :file_id 1
+    # :user_profile 1
+    # :zones_target 1
+    # :session 1
+    # :lap 1
+    # :record 2899
+    # :event 73
+    # :source 58
+    # :device_info 14
+    # :activity 1
+    # :file_creator 1
+    # :training_file 1
+    # :battery_info 40
+    # :sensor_info 3
+    def type
+      case @definition.name
+      when :file_id, :user_profile, :zones_target, :session
+        :ride
+      when condition
+        :lap
+      else
+        :time
+      end
     end
 
     def get_val(key)
@@ -90,7 +126,7 @@ module Fitreader
     end
 
     def to_s
-      s = "#{name} (#{global_msg_num})\n"
+      s = "#{name} (#{definition.global_num})\n"
       @fields.each do |_, v|
         s += v.to_s
       end
