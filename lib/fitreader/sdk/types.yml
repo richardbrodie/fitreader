@@ -1971,12 +1971,12 @@
       :scale: 0
       :offset: 0
     23:
-      :name: :Serial number
+      :name: :serial_number
       :type: :raw
       :scale: 0
       :offset: 0
     24:
-      :name: :Sensor serial number
+      :name: :sensor_serial_number
       :type: :raw
       :scale: 0
       :offset: 0

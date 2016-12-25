@@ -1,0 +1,37 @@
+record
+ definition*            
+ fields*
+ error_fields
+ record_type*
+
+definition
+ name
+ global_num
+ local_num
+ fit_msg*
+ fields_definitions*
+
+field
+ id
+ name
+ raw_val
+ proc_val
+
+record_type
+ per_ride
+ per_lap
+ per_second
+
+fit_msg
+ field_num
+ name
+ type
+ scale
+ ofset
+
+field_definition
+ base_num
+ def_num
+ size
+
+

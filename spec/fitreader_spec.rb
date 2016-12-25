@@ -45,6 +45,11 @@ describe Fitreader do
     it 'has valid records' do
       expect(Fitreader.available_records).not_to be_nil
       expect(Fitreader.available_records.length).to be(14)
+      binding.pry
+    end
+
+    it 'can return name-value data' do
+      expect(Fitreader.record_values :session).to be(Array)
     end
   end
 end

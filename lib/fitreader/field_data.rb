@@ -15,7 +15,7 @@ module Fitreader
     private
     def process_type(data, type)
       @name = type[:name]
-      if type[:type][0..3] == :enum
+      if type[:type][0..3].to_sym == :enum
         data = Static.enums[type[:type]][data]
       elsif type[:type] == :date_time
         data = process_datetime(data)

@@ -22,15 +22,15 @@ module Fitreader
             # puts error unless error.reason == :invalid
           end
         end
+
+        if @definition.global_num == 21
+          process_event
+        elsif @definition.global_num == 23
+          process_deviceinfo
+        end
       else
         msg = "no known message type: #{@definition.global_num}"
         raise UnknownMessageTypeError.new(definition), msg, caller
-      end
-
-      if @definition.global_num == 21
-        process_event
-      elsif @definition.global_num == 23
-        process_deviceinfo
       end
     end
 
@@ -55,6 +55,7 @@ module Fitreader
     def process_data(fieldDefNum, invalid, data)
       field_def = @definition.fit_msg[fieldDefNum]
       unless field_def.nil?
+        # populate invalid
         if data.is_a?(Array)
           data = data.select{ |x| x != invalid } if data.is_a?(Array)
           invalid = data.empty?

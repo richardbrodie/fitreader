@@ -13,11 +13,10 @@ module Fitreader
   end
 
   def self.available_records
-    # binding.pry
     @f.records.collect { |x| [x.definition.global_num, x.definition.name] }
       .group_by { |i| i }
       .sort
-      .map { |k, v| { k => v.length } }
+      .collect { |k, v| k << v.length }
   end
 
   def self.filter_by_record(filter)
@@ -28,6 +27,11 @@ module Fitreader
     else
       raise ArgumentError, "needs a string or a symbol"
     end
+  end
+
+  def self.record_values(filter)
+    records = filter_by_record filter
+    records.collect {|x| x.fields.values.collect{|z| [z.name, z.value]}}.collect{|y| y.to_h}
   end
 
   # def self.error_fields(filter=nil)
