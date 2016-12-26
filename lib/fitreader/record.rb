@@ -5,32 +5,32 @@ module Fitreader
   class Record
     attr_reader :definition, :fields, :error_fields
     def initialize(definition, bytes)
-      @definition = definition
+      # definition = definition
       @fields = {}
       @error_fields = {}
 
-      unless @definition.fit_msg.nil?
+      unless definition.fit_msg.nil?
         start = 0
-        @definition.field_definitions.each do |f|
+        definition.field_definitions.each do |f|
           raw = bytes[start...start+=f.size]
           b = Static.base[f.base_num]
           data = unpack_data(f, b, raw)
           begin
-            process_data(f.def_num, b[:invalid], data)
+            process_data(f.def_num, b[:invalid], data, definition)
           rescue UnknownFieldTypeError => error
             push_error error.reason, error.field, error.data
             # puts error unless error.reason == :invalid
           end
         end
 
-        if @definition.global_num == 21
+        if definition.global_num == 21
           process_event
-        elsif @definition.global_num == 23
+        elsif definition.global_num == 23
           process_deviceinfo
         end
       else
-        msg = "no known message type: #{@definition.global_num}"
-        raise UnknownMessageTypeError.new(definition), msg, caller
+        msg = "no known message type: #{definition.global_num}"
+        raise UnknownMessageTypeError.new, msg, caller
       end
     end
 
@@ -52,8 +52,8 @@ module Fitreader
       end
     end
 
-    def process_data(fieldDefNum, invalid, data)
-      field_def = @definition.fit_msg[fieldDefNum]
+    def process_data(fieldDefNum, invalid, data, definition)
+      field_def = definition.fit_msg[fieldDefNum]
       unless field_def.nil?
         # populate invalid
         if data.is_a?(Array)
@@ -66,12 +66,12 @@ module Fitreader
         unless invalid
           @fields[fieldDefNum] = FieldData.new(fieldDefNum, data, field_def)
         else
-          msg = "invalid field data (#{data}) processed for field number [#{fieldDefNum}::#{field_def[:name]}] in message (#{@definition.global_num}::#{@definition.name})"
-          raise UnknownFieldTypeError.new(@definition, fieldDefNum, data, :invalid), msg, caller
+          msg = "invalid field data (#{data}) processed for field number [#{fieldDefNum}::#{field_def[:name]}] in message (#{definition.global_num}::#{definition.name})"
+          raise UnknownFieldTypeError.new(definition, fieldDefNum, data, :invalid), msg, caller
         end
       else
-        msg = "invalid field [#{fieldDefNum}] encountered for message [#{@definition.global_num}::#{@definition.name}] with data [#{data}]"
-        raise UnknownFieldTypeError.new(@definition, fieldDefNum, data, :unknown), msg, caller
+        msg = "invalid field [#{fieldDefNum}] encountered for message [#{definition.global_num}::#{definition.name}] with data [#{data}]"
+        raise UnknownFieldTypeError.new(definition, fieldDefNum, data, :unknown), msg, caller
       end
     end
 
@@ -98,7 +98,7 @@ module Fitreader
     # :battery_info 40
     # :sensor_info 3
     def type
-      case @definition.name
+      case definition.name
       when :file_id, :user_profile, :zones_target, :session
         :ride
       when condition

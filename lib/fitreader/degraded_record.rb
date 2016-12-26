@@ -3,13 +3,12 @@ require 'fitreader/errors'
 
 module Fitreader
   class DegradedRecord
-    attr_reader :definition, :fields
+    attr_reader :fields
     def initialize(definition, bytes)
-      @definition = definition
       @fields = {}
 
       start = 0
-      @definition.field_definitions.each do |f|
+      definition.field_definitions.each do |f|
         raw = bytes[start...start+=f.size]
         b = Static.base[f.base_num]
         data = unpack_data(f, b, raw)

@@ -10,9 +10,9 @@ module Fitreader
   end
 
   class UnknownMessageTypeError < RuntimeError
-    attr :definition
-    def initialize(definition)
-      @definition = definition
-    end
+    # attr :definition
+    # def initialize(definition)
+    #   @definition = definition
+    # end
   end
 end
