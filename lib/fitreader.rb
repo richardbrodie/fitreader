@@ -24,7 +24,6 @@ module Fitreader
     if filter.is_a?(Symbol)
       res = @f.messages.find { |_,y| y.definition.name == filter}
       res[1] unless res.nil?
-      binding.pry
     elsif filter.is_a?(Integer)
       @f.messages[filter]
     else
