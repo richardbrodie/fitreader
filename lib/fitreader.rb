@@ -1,4 +1,3 @@
-require 'pry'
 require 'fitreader/fitfile'
 require 'fitreader/version'
 require 'fitreader/static'
