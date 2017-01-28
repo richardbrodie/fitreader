@@ -2517,22 +2517,22 @@
       :offset: 0
   147:
     0:
-      :name: :Serial number
+      :name: :serial_number
       :type: :raw
       :scale: 0
       :offset: 0
     2:
-      :name: :Name
+      :name: :name
       :type: :raw
       :scale: 0
       :offset: 0
     32:
-      :name: :Product
+      :name: :product
       :type: :raw
       :scale: 0
       :offset: 0
     34:
-      :name: :Software version
+      :name: :software_version
       :type: :raw
       :scale: 0
       :offset: 0
