@@ -5,6 +5,7 @@ module Fitreader
   class DegradedRecord
     attr_reader :fields
     def initialize(definition, bytes)
+      @endian = definition.endian
       @fields = {}
 
       start = 0
@@ -18,14 +19,15 @@ module Fitreader
 
     def unpack_data(f, b, raw)
       if !b[:unpack_type].nil?
+        unpack = b[:endian] == 1 ? b[:unpack_type][@endian] : b[:unpack_type]
         if b[:size] != f.size && f.base_num != 7
           data = []
           s = 0
           (f.size/b[:size]).times do |_|
-            data.push(raw[s..s+=b[:size]].unpack(b[:unpack_type]).first)
+            data.push(raw[s..s+=b[:size]].unpack(unpack).first)
           end
         else
-          data = raw.unpack(b[:unpack_type]).first
+          data = raw.unpack(unpack).first
         end
       elsif f.base_num.zero?
         data = raw.unpack('C').first

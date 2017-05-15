@@ -12,6 +12,14 @@ module Fitreader
       @num_fields = bytes[4].unpack('C').first
     end
 
+    def endian
+      if @architecture.zero?
+        :little
+      else
+        :big
+      end
+    end
+
     def field(id)
       @field_definitions.find { |x| x.def_num == id }
     end

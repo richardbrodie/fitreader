@@ -20,25 +20,33 @@
   3:
     :type: :int
     :size: 2
-    :unpack_type: s
+    :unpack_type:
+      :big: s>
+      :little: s<
     :endian: 1
     :invalid: 0x7FFF
   4:
     :type: :int
     :size: 2
-    :unpack_type: S
+    :unpack_type:
+      :big: S>
+      :little: S<
     :endian: 1
     :invalid: 0xFFFF
   5:
     :type: :int
     :size: 4
-    :unpack_type: l
+    :unpack_type:
+      :big: l>
+      :little: l<
     :endian: 1
     :invalid: 0x7FFFFFFF
   6:
     :type: :int
     :size: 4
-    :unpack_type: L
+    :unpack_type:
+      :big: L>
+      :little: L<
     :endian: 1
     :invalid: 0xFFFFFFFF
   7:
@@ -50,13 +58,17 @@
   8:
     :type: :float
     :size: 4
-    :unpack_type: e
+    :unpack_type:
+      :big: e
+      :little: g
     :endian: 1
     :invalid: 0xFFFFFFFF
   9:
     :type: :float
     :size: 8
-    :unpack_type: E
+    :unpack_type:
+      :big: E
+      :little: G
     :endian: 1
     :invalid: 0xFFFFFFFFFFFFFFFF
   10:
@@ -68,13 +80,17 @@
   11:
     :type: :int
     :size: 2
-    :unpack_type: S
+    :unpack_type:
+      :big: S>
+      :little: S<
     :endian: 1
     :invalid: 0x0000
   12:
     :type: :int
     :size: 4
-    :unpack_type: L
+    :unpack_type:
+      :big: L>
+      :little: L<
     :endian: 1
     :invalid: 0x0000000000
   13:
