@@ -2,8 +2,8 @@ class DataRecord < FitObject
   attr_reader :fields
 
   def initialize(io, definition)
-    @fields = definition.hash[:field_definitions].map do |f|
-      DataField.new(io, f.hash, definition.endian)
-    end
+    @fields = Hash[definition.field_definitions.map do |f|
+      [f.field_def_num, DataField.new(io, f, definition.endian)]
+    end]
   end
 end

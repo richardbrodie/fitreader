@@ -1,12 +1,11 @@
 class FieldDefinition < FitObject
-  attr_reader :hash
+  attr_reader :field_def_num, :size, :endianness, :base_num
 
   def initialize(io)
-    @hash = {}
-    @hash[:field_def_num] = io.readbyte
-    @hash[:size] = io.readbyte
+    @field_def_num = io.readbyte
+    @size = io.readbyte
     byte = io.readbyte
-    @hash[:endianness] = read_bit(byte, 7)
-    @hash[:base_num] = read_bits(byte, 4..0)
+    @endianness = read_bit(byte, 7)
+    @base_num = read_bits(byte, 4..0)
   end
 end

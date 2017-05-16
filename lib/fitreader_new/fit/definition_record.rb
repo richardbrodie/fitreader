@@ -1,27 +1,19 @@
 require_relative 'field_definition.rb'
 
 class DefinitionRecord < FitObject
-  attr_reader :hash
+  attr_reader :reserved, :architecture, :global_msg_num, :num_fields, :field_definitions, :data_records
 
   def initialize(io)
-    @hash = {}
-    @hash[:reserved] = io.readbyte
-    @hash[:architecture] = io.readbyte
-    char = @hash[:architecture].zero? ? 'v' : 'n'
-    @hash[:global_msg_num] = readbytes(io, char, 2)
-    @hash[:num_fields] = io.readbyte
-    @hash[:field_definitions] = Array.new(num_fields) { FieldDefinition.new(io) }
-  end
-
-  def num_fields
-    @hash[:num_fields]
+    @reserved = io.readbyte
+    @architecture = io.readbyte
+    char = @architecture.zero? ? 'v' : 'n'
+    @global_msg_num = readbytes(io, char, 2)
+    @num_fields = io.readbyte
+    @field_definitions = Array.new(num_fields) { FieldDefinition.new(io) }
+    @data_records = []
   end
 
   def endian
-    if @hash[:architecture].zero?
-      :little
-    else
-      :big
-    end
+    @architecture.zero? ? :little : :big
   end
 end
