@@ -19,7 +19,6 @@ begin
     h = RecordHeader.new(io)
     if h.definition?
       d = DefinitionRecord.new(io, h.local_message_type)
-      puts "new def: #{d.global_msg_num}"
       finished << defs[d.local_num] if defs.key? d.local_num
       defs[d.local_num] = d
     elsif h.data?
@@ -35,6 +34,5 @@ rescue => e
   puts e
 end
 
-# puts "#{finished.map { |x| x.global_msg_num }}"
-binding.pry
+# binding.pry
 puts "done"

@@ -17,4 +17,8 @@ class DefinitionRecord < FitObject
   def endian
     @architecture.zero? ? :little : :big
   end
+
+  def msg_struct
+
+  end
 end
