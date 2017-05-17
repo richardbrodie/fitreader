@@ -10,29 +10,31 @@ require_relative 'fit/data_record.rb'
 # io = File.open('wahoo.fit', 'rb')
 io = File.open('garmin.fit', 'rb')
 defs = {}
-final_defs = []
+finished = []
 
 header = FileHeader.new(io)
 
 begin
-  until (io.pos - 16) == header.num_record_bytes
+  until io.pos >= header.num_record_bytes
     h = RecordHeader.new(io)
     if h.definition?
-      d = DefinitionRecord.new(io)
-      binding.pry if d.global_msg_num == 20
-      final_defs << defs[h.local_message_type]
-      defs[h.local_message_type] = d
-    else
-      d = defs[h.local_message_type]
+      d = DefinitionRecord.new(io, h.local_message_type)
+      puts "new def: #{d.global_msg_num}"
+      finished << defs[d.local_num] if defs.key? d.local_num
+      defs[d.local_num] = d
+    elsif h.data?
+      d = defs[h.local_message_type] if d.local_num != h.local_message_type
       d.data_records << DataRecord.new(io, d)
+    else # timestamp
+      puts 'timestamp!'
     end
   end
-  final_defs << defs.values
+  finished.push(*defs.values)
+  # finished.each(&:process)
 rescue => e
   puts e
-  puts "io: #{io.pos}"
-  puts "header length: #{header.num_record_bytes}"
 end
 
+# puts "#{finished.map { |x| x.global_msg_num }}"
 binding.pry
 puts "done"

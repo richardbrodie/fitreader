@@ -4,10 +4,10 @@ class RecordHeader < FitObject
   def initialize(io)
     byte = io.readbyte
 
-    @header_type = read_bit(byte, 7)
+    @header_type = read_bit(byte, 7)             # 0 = normal, 1 = timestamp
     if @header_type.zero?
-      @message_type = read_bit(byte, 6)
-      @message_type_specific = read_bit(byte, 5)
+      @message_type = read_bit(byte, 6)          # 1 = definition, 0 = data
+      @message_type_specific = read_bit(byte, 5) # 1 = developer fields
       @reserved = read_bit(byte, 4)
       @local_message_type = read_bits(byte, 3..0)
     else
@@ -18,6 +18,10 @@ class RecordHeader < FitObject
 
   def definition?
     @header_type.zero? && @message_type == 1
+  end
+
+  def data?
+    @header_type.zero? && @message_type.zero?
   end
 
   def timestamp?

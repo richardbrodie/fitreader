@@ -13,7 +13,10 @@ class DataField < FitObject
     10 => { size: 1, unpack_type: 'C', endian: 0, invalid: 0 },
     11 => { size: 2, unpack_type: { big: 'S>', little: 'S<' }, endian: 1, invalid: 0 },
     12 => { size: 4, unpack_type: { big: 'L>', little: 'L<' }, endian: 1, invalid: 0 },
-    13 => { size: 1, unpack_type: nil, endian: 0, invalid: 255 }
+    13 => { size: 1, unpack_type: 'C', endian: 0, invalid: 0xFF },
+    14 => { size: 8, unpack_type: { big: 'q>', little: 'q<' }, endian: 1, invalid: 0x7FFFFFFFFFFFFFFF },
+    15 => { size: 8, unpack_type: { big: 'Q>', little: 'Q<' }, endian: 1, invalid: 0xFFFFFFFFFFFFFFFF },
+    16 => { size: 8, unpack_type: nil, endian: 1, invalid: 0x0000000000000000 }
   }.freeze
 
   def initialize(io, d, arch)

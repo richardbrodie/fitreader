@@ -1,9 +1,10 @@
 require_relative 'field_definition.rb'
 
 class DefinitionRecord < FitObject
-  attr_reader :reserved, :architecture, :global_msg_num, :num_fields, :field_definitions, :data_records
+  attr_reader :reserved, :architecture, :global_msg_num, :num_fields, :field_definitions, :data_records, :local_num
 
-  def initialize(io)
+  def initialize(io, local_num)
+    @local_num = local_num
     @reserved = io.readbyte
     @architecture = io.readbyte
     char = @architecture.zero? ? 'v' : 'n'
