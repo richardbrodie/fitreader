@@ -1,9 +1,9 @@
 require 'yaml'
 
 class Sdk
-  @enums ||= YAML.load_file('enums.yml')
-  @fields ||= YAML.load_file('fields.yml')
-  @messages ||= YAML.load_file('messages.yml')
+  @enums ||= YAML.load_file(File.join(File.dirname(__FILE__), 'enums.yml'))
+  @fields ||= YAML.load_file(File.join(File.dirname(__FILE__), 'fields.yml'))
+  @messages ||= YAML.load_file(File.join(File.dirname(__FILE__), 'messages.yml'))
 
   def self.enum(name)
     @enums[name]

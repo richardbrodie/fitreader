@@ -4,12 +4,12 @@ module Unpack
   end
 
   def read_multiple(io, char, len, size)
-    multiples = len / size
-    res = io.read(len).unpack(char * multiples)
-    if res.length == 1
-      return res.first
+    if char == 'Z*'
+      readbytes(io, char, len)
     else
-      return res
+      multiples = len / size
+      res = io.read(len).unpack(char * multiples)
+      res.first if res.length == 1
     end
   end
 
@@ -33,5 +33,5 @@ module Unpack
     2 => 0b00000100,
     1 => 0b00000010,
     0 => 0b00000001
-  }
+  }.freeze
 end

@@ -18,7 +18,11 @@ class DefinitionRecord < FitObject
     @architecture.zero? ? :little : :big
   end
 
-  def msg_struct
-
+  def first_level
+    fd = Sdk.fields(@global_msg_num)
+    return if fd.nil?
+    @data_records.map do |d|
+      Hash[d.second_level(fd.keys).map { |k, v| [k, [fd[k][:name], v.raw]] }]
+    end
   end
 end

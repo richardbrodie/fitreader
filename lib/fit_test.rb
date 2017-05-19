@@ -1,14 +1,17 @@
 require 'pry'
-require_relative 'unpack.rb'
-require_relative 'fit/fit_object.rb'
-require_relative 'fit/file_header.rb'
-require_relative 'fit/record_header.rb'
-require_relative 'fit/definition_record.rb'
-require_relative 'fit/data_field.rb'
-require_relative 'fit/data_record.rb'
+require_relative 'fitreader/unpack.rb'
+require_relative 'fitreader/fit/fit_object.rb'
+require_relative 'fitreader/fit/file_header.rb'
+require_relative 'fitreader/fit/record_header.rb'
+require_relative 'fitreader/fit/definition_record.rb'
+require_relative 'fitreader/fit/data_field.rb'
+require_relative 'fitreader/fit/data_record.rb'
+require_relative 'fitreader/fit/message.rb'
+require_relative 'fitreader/fit/sdk/sdk.rb'
 
 # io = File.open('wahoo.fit', 'rb')
-io = File.open('garmin.fit', 'rb')
+# io = File.open('fitreader/garmin.fit', 'rb')
+io = File.open('fitreader/1740015980.fit', 'rb')
 defs = {}
 finished = []
 
@@ -34,5 +37,8 @@ rescue => e
   puts e
 end
 
-# binding.pry
+d = finished.first.first_level
+m = Message.new finished[3]
+
+binding.pry
 puts "done"

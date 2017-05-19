@@ -19,18 +19,20 @@ class DataField < FitObject
     16 => { size: 8, unpack_type: nil, endian: 1, invalid: 0x0000000000000000 }
   }.freeze
 
+  attr_reader :raw, :valid
+
   def initialize(io, d, arch)
     base = TYPES[d.base_num]
     char = d.endianness.zero? ? base[:unpack_type] : base[:unpack_type][arch]
     @raw = read_multiple(io, char, d.size, base[:size])
-    @value = check(@raw, base[:invalid])
+    @valid = check(@raw, base[:invalid])
   end
 
   def check(raw, invalid)
     if raw.is_a? Array
-      raw unless raw.all? { |e| e == invalid }
+      raw.any? { |e| e != invalid }
     else
-      raw unless raw == invalid
+      raw != invalid
     end
   end
 end

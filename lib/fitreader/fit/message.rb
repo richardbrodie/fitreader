@@ -1,11 +1,9 @@
 class Message
-  attr_accessor :global_num, :name, :records
+  attr_accessor :global_num, :name, :data
 
-  def initialize(definitions)
-    # @global_num = definitions.first.global_msg_num
-    # @name = FitSdk.message_name(@global_num)
-    definitions.each do |d|
-
-    end
+  def initialize(definition)
+    @global_num = definition.global_msg_num
+    @name = Sdk.message(@global_num)
+    @data = definition.first_level
   end
 end
