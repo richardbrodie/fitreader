@@ -35,7 +35,7 @@ require 'fitreader'
 to the class you wish to call it from. After that, it's a simple matter of calling
 
 ```ruby
-Fitreader.read(path_to_fit_file)
+fit_file = Fit.new(path_to_fit_file)
 ```
 
 All of the interface and convenience functions can be found in lib/fitreader.rb.
@@ -43,64 +43,53 @@ All of the interface and convenience functions can be found in lib/fitreader.rb.
 After reading a FIT file, the file header can be inspected by calling
 
 ```ruby
-Fitreader.header
+fit_file.header
 ```
 
 A digest of the records found in the file is shown with
 
 ```ruby
-Fitreader.available_records
+fit_file.digest
 ```
 
-which will return a list similar to the following, showing respectively the global_message_number (as defined in the FIT SDK), the name of the record type, and the number of records parsed
+which will return a list similar to the following, showing respectively the name of the record type (as defined in the FIT SDK), and the number of records parsed
 
 ```ruby
-[[0, :file_id, 1],
- [3, :user_profile, 1],
- [7, :zones_target, 1],
- [18, :session, 1],
- [19, :lap, 1],
- [20, :record, 2899],
- [21, :event, 73],
- [22, :source, 58],
- [23, :device_info, 14],
- [34, :activity, 1],
- [49, :file_creator, 1],
- [72, :training_file, 1],
- [104, :battery_info, 40],
- [147, :sensor_info, 3]]
+{:file_id=>1,
+ :file_creator=>1,
+ :device_settings=>1,
+ :user_profile=>1,
+ :sensor_info=>5,
+ :sport=>1,
+ :zones_target=>1,
+ :record=>4988,
+ :event=>120,
+ :device_info=>30,
+ :source=>43,
+ :segment_lap=>2,
+ :lap=>1,
+ :session=>1,
+ :activity=>1,
+ :battery_info=>20}
 ```
 
 Armed with this information, we can call
 
 ```ruby
-Fitreader.get_message_type filter
+fit_file.type <name>
 ```
 
-where filter is either the global_number or the name supplied by the previous command, for example
+where <name> is the name supplied by the previous command, for example
 
 ```ruby
-Fitreader.get_message_type 18
-Fitreader.get_message_type :session
+fit_file.type :session
 ```
 
-will both fetch the session record(s) in the form of a MessageType object. This object contains three fields: a definition, an array of records and an array of undefined_records.
+will fetch the session record(s) in the form of a Message object. This object contains three fields: a name, a global_num (as defined by the FIT SDK), and an array of records.
 
-The definition contains metadata from a combination of the FIT file itself and the SKD. I will write more detailed information, but basically this information tells us how to interpret the actual data. Of most relevance, it tells us the name and datatype of each field we will find in records of this type.
+The records array contains a list of hashes, with key-value pairs of field name (also according to the message-type definition) and value, for example timestamp, or coordinates, etc.
 
-The records array contains a list or Record objects. A Record object contains a fields array and an error_fields array. The fields array is a list of the actual data contined within this record, for example timestamp, or coordinated, etc. The particular FieldData object includes the name of the field (also found in the definition), along with the raw_value and the processed value which may differ in the case of, for example, a coordinate.
-
-The error_fields array contains any fields defined in the FIT file itself that aren't defined within the SDK. Without the SKD we can most likely never know what the field represents or whether the raw value would need further processing to make sense to us. These are included mostly for debugging and future convenience sake.
-
-The results of this function are probably a lot more data that we generally need, so a convenience function is included that distills the results of the previous call into a more efficient dataset
-
-```ruby
-Fitreader.record_values 20
-Fitreader.record_values :record
-```
-
-This will return an array of hashes, one hash for each record of the specified type. The hashes contain only the field name and value, for example
-
+For example:
 ```ruby
 {:timestamp=>2016-04-09 11:19:51 UTC,
  :position_lat=>57.711100755259395,
@@ -116,7 +105,7 @@ This will return an array of hashes, one hash for each record of the specified t
 
  Some things to watch out for:
 
- - speed is recorded as m/s in my files, rather than kph as one might expect.
+ - speed is recorded as m/s, rather than kph as one might expect.
 
 ## Development
 

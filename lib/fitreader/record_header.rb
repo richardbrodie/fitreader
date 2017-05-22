@@ -1,31 +1,30 @@
-module Fitreader
-  class RecordHeader
-    attr_accessor :header_type, :local_num,
-    :timestamp_offset, :developer
+class RecordHeader < FitObject
+  attr_accessor :header_type, :message_type, :message_type_specific, :local_message_type, :time_offset
 
-    def initialize(byte)
-      timstamp_header = byte & TIMESTAMP_RECORD > 0
-      unless timstamp_header
-        @header_type = byte & DEFINITION_MESSAGE > 0 ? :definition : :data
-        @local_num = byte & NORMAL_TYPE
-        if byte & DEVELOPER_DATA == DEVELOPER_DATA
-          @developer = true
-          puts "developer"
-        end
-      else
-        @header_type = :timestamp
-        @local_num = byte & TIMESTAMP_TYPE
-        @timestamp_offset = byte & TIMESTAMP_OFFSET
-        puts "timestamp header: #{@local_msg_num} :: #{@timestamp_offset}"
-      end
+  def initialize(io)
+    byte = io.readbyte
+
+    @header_type = read_bit(byte, 7)             # 0 = normal, 1 = timestamp
+    if @header_type.zero?
+      @message_type = read_bit(byte, 6)          # 1 = definition, 0 = data
+      @message_type_specific = read_bit(byte, 5) # 1 = developer fields
+      @reserved = read_bit(byte, 4)
+      @local_message_type = read_bits(byte, 3..0)
+    else
+      @local_message_type = read_bits(byte, 6..5)
+      @time_offset = read_bits(byte, 4..0)
     end
+  end
 
-    private
-    TIMESTAMP_RECORD = 0b10000000
-    DEFINITION_MESSAGE = 0b01000000
-    DEVELOPER_DATA = 0b00100000
-    NORMAL_TYPE = 0b00001111
-    TIMESTAMP_TYPE = 0b01100000
-    TIMESTAMP_OFFSET = 0b00011111
+  def definition?
+    @header_type.zero? && @message_type == 1
+  end
+
+  def data?
+    @header_type.zero? && @message_type.zero?
+  end
+
+  def timestamp?
+    @header_type == 1
   end
 end

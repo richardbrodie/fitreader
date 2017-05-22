@@ -1,15 +1,11 @@
-module Fitreader
-  class FieldDefinition
-    attr_accessor :def_num, :size, :base_num
+class FieldDefinition < FitObject
+  attr_reader :field_def_num, :size, :endianness, :base_num
 
-    def initialize(msg_num, bytes)
-      @def_num = bytes[0].unpack('C').first
-      @size = bytes[1].unpack('C').first
-      # @single_byte = bytes[2].unpack('C').first & ENDIAN_ABILITY == 0
-      @base_num = bytes[2].unpack('C').first & BASE_TYPE_NUM
-    end
-
-    ENDIAN_ABILITY = 128
-    BASE_TYPE_NUM = 31
+  def initialize(io)
+    @field_def_num = io.readbyte
+    @size = io.readbyte
+    byte = io.readbyte
+    @endianness = read_bit(byte, 7)
+    @base_num = read_bits(byte, 4..0)
   end
 end
