@@ -16,7 +16,7 @@ class Fit
     finished = []
     begin
       defs = {}
-      until io.pos >= header.num_record_bytes
+      until (io.pos - 14) >= header.num_record_bytes
         h = RecordHeader.new(io)
         if h.definition?
           d = DefinitionRecord.new(io, h.local_message_type)
@@ -30,8 +30,8 @@ class Fit
         end
       end
       finished.push(*defs.values)
-    rescue
-      puts "error"
+    rescue => e
+      puts "error: #{e}\n#{e.backtrace}"
     end
     io.close
     @messages = finished.group_by(&:global_msg_num)

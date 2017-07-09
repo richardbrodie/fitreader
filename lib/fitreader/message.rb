@@ -62,7 +62,7 @@ class Message
   def process_event(h)
     case h[:event]
     when :rear_gear_change, :front_gear_change
-      h[:data] = h[:data].pack('V*').unpack('C*')
+      h[:data] = Array(h[:data]).pack('V*').unpack('C*')
     end
     h
   end
