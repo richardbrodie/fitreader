@@ -15,14 +15,16 @@ class Message
   def make_message(definition, fields)
     return if definition.valid.nil?
     definition.valid.map do |d|
-      h = Hash[d.map { |k, v| process_value(fields[k], v.raw) }]
+      sdk_fields = d.select { |k, v| fields.has_key?(k) }
+      h = Hash[sdk_fields.map { |k, v| process_value(fields[k], v.raw) }]
       case @global_num
       when 21
         h = process_event(h)
       when 0, 23
         h = process_deviceinfo(h)
       end
-      h
+      dev_fields = Hash[d.select { |k, v| k.is_a?(Symbol) }.map {|k,v| [k, v.raw]}]
+      h.merge(dev_fields)
     end
   end
 

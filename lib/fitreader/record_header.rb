@@ -24,6 +24,10 @@ class RecordHeader < FitObject
     @header_type.zero? && @message_type.zero?
   end
 
+  def has_dev_defs?
+    @message_type_specific == 1
+  end
+
   def timestamp?
     @header_type == 1
   end

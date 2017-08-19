@@ -21,10 +21,15 @@ class DataField < FitObject
 
   attr_reader :raw, :valid
 
-  def initialize(io, d, arch)
-    base = TYPES[d.base_num]
-    char = d.endianness.zero? ? base[:unpack_type] : base[:unpack_type][arch]
-    @raw = read_multiple(io, char, d.size, base[:size])
+  def initialize(io, options)
+    base_num = options[:base_num]
+    size = options[:size]
+    arch = options[:arch]
+
+    base = TYPES[base_num]
+    char = base[:unpack_type]
+    char = char[arch] if char.is_a?(Hash)
+    @raw = read_multiple(io, char, size, base[:size])
     @valid = check(@raw, base[:invalid])
   end
 

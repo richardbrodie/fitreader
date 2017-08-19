@@ -1,6 +1,8 @@
 module Unpack
   def readbytes(io, char, len)
-    io.read(len).unpack(char).first
+    d = io.read(len)
+    # binding.pry if char == 'Z*'
+    d.unpack(char).first
   end
 
   def read_multiple(io, char, len, size)
