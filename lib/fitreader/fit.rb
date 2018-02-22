@@ -7,7 +7,6 @@ require_relative 'data_field.rb'
 require_relative 'data_record.rb'
 require_relative 'message.rb'
 require_relative 'sdk/sdk.rb'
-require 'pry'
 
 class Fit
   attr_reader :header, :messages
@@ -48,7 +47,6 @@ class Fit
                           .map { |x| Message.new x }
                           .reject { |x| x.data.nil? }
     rescue => e
-      binding.pry
       puts "error: #{e}\n#{e.backtrace}"
     end
   end

@@ -1,7 +1,6 @@
 module Unpack
   def readbytes(io, char, len)
     d = io.read(len)
-    # binding.pry if char == 'Z*'
     d.unpack(char).first
   end
 
