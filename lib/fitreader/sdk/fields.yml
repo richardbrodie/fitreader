@@ -1978,7 +1978,7 @@
     :offset: 0
   3:
     :name: :serial_number
-    :type: :uint32z
+    :type: :uint32
     :scale: 0
     :offset: 0
   4:
@@ -1986,6 +1986,98 @@
     :type: :date_time
     :scale: 0
     :offset: 0
+101:
+  254:
+    :name: :message_index
+    :type: :message_index
+    :scale: 0
+    :offset: 0
+  253:
+    :name: :timestamp
+    :type: :date_time
+    :scale: 0
+    :offset: 0
+  0:
+    :name: :event
+    :type: :enum_event
+    :scale: 0
+    :offset: 0
+  1:
+    :name: :event_type
+    :type: :enum_event_type
+    :scale: 0
+    :offset: 0
+  2:
+    :name: :start_time
+    :type: :date_time
+    :scale: 0
+    :offset: 0
+  3:
+    :name: :total_elapsed_time
+    :type: :uint32
+    :scale: 1000
+    :offset: 0
+  4:
+    :name: :total_timer_time
+    :type: :uint32
+    :scale: 1000
+    :offset: 0
+  5:
+    :name: :total_strokes
+    :type: :uint16
+    :scale: 0
+    :offset: 0
+  6:
+    :name: :avg_speed
+    :type: :uint16
+    :scale: 1000
+    :offset: 0
+  7:
+    :name: :swim_stroke
+    :type: :enum_swim_stroke
+    :scale: 1000
+    :offset: 0
+  9:
+    :name: :avg_swimming_cadence
+    :type: :uint8
+    :scale: 0
+    :offset: 0
+  10:
+    :name: :event_group
+    :type: :unit8
+    :scale: 0
+    :offset: 0
+  11:
+    :name: :total_calories
+    :type: :uint16
+    :scale: 0
+    :offset: 0
+  12:
+    :name: :length_type
+    :type: :enum_length_type
+    :scale: 0
+    :offset: 0
+  18:
+    :name: :player_score
+    :type: :uint16
+    :scale: 0
+    :offset: 0
+  19:
+    :name: :opponent_score
+    :type: :uint16
+    :scale: 0
+    :offset: 0
+  20:
+    :name: :stroke_count
+    :type: :uint16
+    :scale: 0
+    :offset: 0
+  21:
+    :name: :zone_count
+    :type: :uint16
+    :scale: 0
+    :offset: 0
+
 104:
   253:
     :name: :timestamp
