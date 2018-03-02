@@ -664,3 +664,56 @@
 :enum_length_type:
   0: :idle
   1: :active
+
+:enum_time_mode:
+  0: :hour12
+  1: :hour24
+  2: :military
+  3: :hour_12_with_seconds
+  4: :hour_24_with_seconds
+  5: :utc
+
+:enum_backlight_mode:
+  0: :off
+  1: :manual
+  2: :kay_and_messages
+  3: :auto_brightness
+  4: :smart_notifications
+  5: :key_and_messages_night
+  6: :key_and_messages_and_smart_notifications
+
+:enum_date_mode:
+  0: :day_month
+  1: :month_day
+
+:enum_display_orientation:
+  0: :auto
+  1: :portrait
+  2: :landscape
+  3: :portrait_flipped
+  4: :landscape_flipped
+
+:enum_side:
+  0: :right
+  1: :left
+
+:enum_auto_sync_frequency:
+  0: :never
+  1: :occasionally
+  2: :frequent
+  3: :once_a_day
+  4: :remote
+
+:enum_auto_activity_detect:
+  0: :none
+  1: :running
+  2: :cycling
+  4: :swimming
+  8: :walking
+  32: :elliptical
+  1024: :sedentary
+
+:enum_switch:
+  0: :off
+  1: :on
+  2: :auto
