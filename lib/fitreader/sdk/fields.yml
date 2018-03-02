@@ -2035,7 +2035,7 @@
   7:
     :name: :swim_stroke
     :type: :enum_swim_stroke
-    :scale: 1000
+    :scale: 0
     :offset: 0
   9:
     :name: :avg_swimming_cadence

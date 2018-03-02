@@ -652,6 +652,15 @@
   123: :bike_speed
   124: :stride_speed_distance
 
+:enum_swim_stroke:
+  0: :freestyle
+  1: :backstroke
+  2: :breastroke
+  3: :butterfly
+  4: :drill
+  5: :mixed
+  6: :im
+
 :enum_length_type:
   0: :idle
   1: :active
