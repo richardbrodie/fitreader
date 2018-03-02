@@ -651,3 +651,7 @@
   122: :bike_cadence
   123: :bike_speed
   124: :stride_speed_distance
+
+:enum_length_type:
+  0: :idle
+  1: :active
