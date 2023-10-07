@@ -33,7 +33,7 @@ class Message
       val = Sdk.enum(type[:type])[val]
     elsif type[:type] == :date_time
       t = Time.new(1989, 12, 31, 0, 0, 0, '+00:00').utc.to_i
-      val Time.at(val + t).utc
+      val = Time.at(val + t).utc
     elsif type[:type] == :local_date_time
       t = Time.new(1989, 12, 31, 0, 0, 0, '+02:00').utc.to_i
       val = Time.at(val + t)
